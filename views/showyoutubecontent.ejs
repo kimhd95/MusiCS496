@@ -1,0 +1,20 @@
+<table>
+  <thead>
+    <tr>
+      <th> 아티스트 </th>
+      <th> 곡 </th>
+      <th> 조회수 </th>
+      <th> 링크 </th>
+    </tr>
+  </thead>
+  <tbody>
+    <% for (var i=0; i < array.length; i++) { %>
+    <tr>
+      <td><%=array[i].artist %></td>
+      <td><%=array[i].title %></td>
+      <td><%=array[i].views %></td>
+      <td><%="http://www.youtube.com"+array[i].link %></td>
+    </tr>
+    <% } %>
+  </tbody>
+</table>

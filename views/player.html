@@ -1,0 +1,362 @@
+<!doctype html>
+<html>
+
+<style>
+#myProgress {
+  position: absolute;
+	top: 500px;
+	left: 0px;
+  width: 500px;
+  height: 30px;
+  background-color: #ddd;
+}
+#myBar {
+  position: relative;
+	left: 0px;
+  width: 0%;
+  height: 100%;
+  background-color: #4CAF50;
+}
+#wrapper
+{
+    width: 1000px;
+    margin: 0 auto;
+}
+
+</style>
+
+<head>
+	<meta charset="utf-8">
+	<title> Audio Visualization</title>
+</head>
+
+<body>
+	<div id="wrapper">
+	<p>
+		<input id="fileChooseInput" type="file" accept="audio/*"></input>
+	</p>
+	<p>
+		<button id='play_button' onclick="playSound(myAudioBuffer)">Play</button>
+		<button onclick="stopSound()">Stop</button>
+	</p>
+	<p id='time_text'>Time</p>
+	<p id='info'></p>
+
+	<p>
+
+	<div>
+		<div style="position: absolute;">
+			<div style="position: relative;">
+				<img id='picture' width='500' height='500'>
+			</div>
+		</div>
+
+		<div style="position: absolute;">
+			<div style="position: relative;">
+				<canvas id='spec_view' width="500" height="500"></canvas>
+			</div>
+		</div>
+
+		<div style="position: absolute;">
+			<div style="position: relative;" id='myProgress'>
+    		<div id='myBar'></div>
+			</div>
+		</div>
+	</div>
+	<div style="position: absolute;">
+		<div id='lyrics' style="overflow:scroll; top:700px; left:0px; width:500px; height:150px; padding:10px; background-color:white; position: absolute;">
+		</div>
+	</div>
+	</p>
+
+	<script src="getLyrics.js"></script>
+	<script src="jsmediatags.js"></script>
+	<script>
+		// Simple API - will fetch all tags
+		var jsmediatags = window.jsmediatags;
+
+		//var music_info = window.music_info;
+		var context;
+		var myAudioBuffer = null;
+		var analyser;
+
+		var spec_view;
+		var WIDTH = 500;
+		var HEIGHT = 500;
+		var freeze_status = false;
+		var is_play = false;
+		var totalTime = 0;
+		var parseTotal = "00:00";
+		var remainTime = 0;
+		var startTime = 0;
+		//var pauseTime = 0;
+		var offset = 0;
+		var width = 0;
+
+		var repeat;
+
+		function startInterval(){
+			console.log("started");
+			repeat = setInterval(function(){
+				if(is_play&&source&&(offset<totalTime)){
+					offset += 0.01;
+					width += 1/totalTime;
+				}
+				remainTime = totalTime - offset;
+				if(remainTime<=0){
+					stopSound();
+				}
+				times = parseInt(offset);
+				parseTime = (parseInt(times/60)<10?"0"+parseInt(times/60):parseInt(times/60))+":"+(times%60<10?"0"+times%60:times%60);
+				document.getElementById("myBar").style.width = width + '%';
+				time_text.innerHTML = (parseInt(times/60)<10?"0"+parseInt(times/60):parseInt(times/60))+":"+(times%60<10?"0"+times%60:times%60) + "/" + parseTotal + "//" + remainTime;
+			}, 10);
+			console.log(repeat);
+		}
+
+		function endInterval(){
+			console.log("stopped");
+			clearInterval(repeat);
+		}
+
+		window.requestAnimationFrame(draw_spec);
+		//
+		window.onload = function () {
+			// file open button
+			var control = document.getElementById("fileChooseInput");
+
+			control.addEventListener("change", fileChanged, false);
+
+			// canvas
+			spec_view = document.getElementById("spec_view");
+			spec_view.width = WIDTH;
+			spec_view.height = HEIGHT;
+
+			// create audio context
+			window.AudioContext = window.AudioContext || window.webkitAudioContext;
+			context = new AudioContext();
+
+			// analyzer
+			analyser = context.createAnalyser();
+			analyser.fftSize = 2048;
+			analyser.smoothingTimeConstant = 0;
+		}
+
+		function draw_spec() {
+			// 2d canvas context
+			var drawContext = spec_view.getContext('2d');
+			drawContext.globalAlpha = 0.5;
+			// fill rectangular
+			drawContext.fillStyle = 'rgb(0, 0, 0, 1)';
+			drawContext.fillRect(0, 0, WIDTH, HEIGHT, 50);
+			// drawing line setting
+			drawContext.lineWidth = 2;
+			drawContext.strokeStyle = 'rgb(0, 128, 255, 1)';
+			drawContext.beginPath();
+			// get samples
+			var dataArray = new Uint8Array(analyser.frequencyBinCount);
+			analyser.getByteFrequencyData(dataArray);
+
+			var sliceAngle = (Math.PI * 2.0) / ((dataArray.length - 160) * 2);
+			//length=1024
+			var theta = 0;
+			for (var i = 0; i < dataArray.length - 160; i++) {
+				var v = dataArray[i] / 256.0;
+				var r = 78;
+				var alpha = v * r;
+				var amplitude = alpha + r;
+				var x = WIDTH / 2.0 + amplitude * Math.sin(theta);
+				var y = HEIGHT / 2.0 - amplitude * Math.cos(theta);
+
+				if (i === 0) {
+					drawContext.moveTo(x, y);
+				} else {
+					drawContext.rect(x, y, sliceAngle, v);
+				}
+				theta += sliceAngle;
+			}
+
+			for (var i = dataArray.length - 161; i >= 0; i--) {
+				var v = dataArray[i] / 256.0;
+				var r = 78;
+				var alpha = v * r;
+				var amplitude = alpha + r;
+				var x = WIDTH / 2.0 + amplitude * Math.sin(theta);
+				var y = HEIGHT / 2.0 - amplitude * Math.cos(theta);
+
+				if (i === 0) {
+					drawContext.moveTo(x, y);
+				} else {
+					drawContext.rect(x, y, sliceAngle, v);
+					//drawContext.lineTo(x, y);
+				}
+				theta += sliceAngle;
+			}
+
+			// last touch
+			//drawContext.lineTo(draw_spec.width, draw_spec.height/2);
+
+			//drawContext.arc(WIDTH/2, HEIGHT/2, 75, 0, Math.PI * 2, true);
+			drawContext.stroke();
+
+			// queue for next callback
+			if (freeze_status == false) {
+				window.requestAnimationFrame(draw_spec);
+			}
+
+			//drawContext.clearRect(0, 0, WIDTH, HEIGHT);
+		}
+
+
+		function fileChanged(e) {
+			var file = e.target.files[0];
+			var name = file.name; // get file name
+			jsmediatags.read(e.target.files[0], {
+				onSuccess: function (tag) {
+					var info = "";
+					var tags = tag.tags;
+					var artist;
+					var title;
+					var album = tags.album;
+					//alert(tags.artist);
+					//alert(tags.title);
+					//alert(tags.album);
+					//alert(tags.year);
+					//alert(tags.track);
+
+					var image = tags.picture;
+					var base64String = "";
+					if (image) {
+						for (var i = 0; i < image.data.length; i++) {
+							base64String += String.fromCharCode(image.data[i]);
+						}
+						var base64 = "data:image/jpeg;base64," +
+							window.btoa(base64String);
+						document.getElementById('picture').style.display = "inline"
+						document.getElementById('picture').setAttribute('src', base64);
+					} else {
+						document.getElementById('picture').style.display = "none";
+					}
+					if(tags.artist){
+						artist = tags.artist;
+					}
+					else if(name.includes("-")){
+						artist = name.split("-")[0].replace(/_/gi, " ");
+					}
+					else{
+						artist = "Various Artist";
+					}
+
+					if(tags.title){
+						title = tags.title;
+						if(title.includes("-")){
+							artist = title.split("-")[0];
+							title = title.split("-")[1];
+						}
+					}
+					else if(name.includes("-")){
+						title = name.split("-")[1].replace(/(^\s*)|(\s*$)/g, "").replace(/_/gi, " ");
+					}
+					else{
+						title = name;
+					}
+
+					info += artist;
+					info += " - " + title;
+
+					if(album){
+						info += " / " + album;
+					} else{
+						info += " / Various Album";
+					}
+
+					document.getElementById('info').innerHTML = info;
+					//post artist name and title
+					var lyricTime = new Array();
+					postInfo(artist, title, document.getElementById("lyrics"), lyricTime);
+					postJSON(title, artist);
+				},
+				onError: function (error) {
+					console.log(error);
+				}
+			});
+
+			var offset = 0;
+			stopSound();
+			//alert(path);
+			var fileReader = new FileReader();
+			fileReader.onload = fileLoaded;
+			fileReader.readAsArrayBuffer(file);
+		}
+
+		function fileLoaded(e) {
+			context.decodeAudioData(e.target.result, function (buffer) {
+				myAudioBuffer = buffer;
+			});
+		}
+		var source = null;
+
+		function playSound(anybuffer) {
+			var time_text = document.getElementById("time_text");
+			var play_button = document.getElementById("play_button");
+			//offset = pauseTime;
+			if (!is_play) {
+				is_play = true;
+				totalTime = anybuffer.duration;
+				parseTotal = (parseInt(totalTime/60)<10?"0"+parseInt(totalTime/60):parseInt(totalTime/60))+":"+(parseInt(totalTime%60)<10?"0"+parseInt(totalTime%60):parseInt(totalTime%60));
+				source = context.createBufferSource();
+				source.buffer = anybuffer;
+				source.connect(context.destination);
+
+				// connect source to analyser
+				source.connect(analyser);
+
+				source.start(0, offset);
+
+				startTime = context.currentTime - offset;
+				//pauseTime = 0;
+
+				// visualize audio
+				startInterval();
+				draw_spec();
+				play_button.innerHTML = 'Pause';
+			}
+			else {
+				is_play = false;
+				//var elapsed = context.currentTime - startTime;
+				window.requestAnimationFrame(draw_spec);
+
+				//toggleFreezeAnimation();
+				source.stop();
+				endInterval();
+				//pauseTime = elapsed;
+				play_button.innerHTML = 'Play';
+			}
+		}
+
+		function stopSound() {
+			if (source) {
+				var play_button = document.getElementById("play_button");
+				play_button.innerHTML = 'Play';
+				source.stop();
+				is_play = false;
+				offset = 0;
+				width = 0;
+				//pauseTime = 0;
+				playTime = 0;
+				remainTime = totalTime;
+				endInterval();
+				//alert(context.currentTime);
+			}
+		}
+
+		function toggleFreezeAnimation() {
+			window.requestAnimationFrame(draw_spec);
+			var freeze_button = document.getElementById("freeze_button");
+			freeze_button.innerHTML = 'pause';
+		}
+	</script>
+	</div>
+</body>
+
+</html>

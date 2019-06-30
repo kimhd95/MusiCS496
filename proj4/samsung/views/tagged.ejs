@@ -1,0 +1,45 @@
+<style>
+
+th {
+  border-style: solid solid solid solid ;
+  border-width:2pt;
+  background:#ffaaaa;
+}
+
+th.tag{
+  border-style: solid solid solid solid ;
+  border-width:2pt;
+  background:#8ec0e4;
+}
+
+td {
+  border-style: dotted solid dotted solid ;
+  border-width:2pt;
+  background:#ffe6ee;
+}
+
+td.tag{
+  border-style: dotted solid dotted solid ;
+  border-width:2pt;
+  background:#ffffff;
+}
+</style>
+
+<table>
+  <thead>
+    <tr>
+      <th> 아티스트 </th>
+      <th> 곡 </th>
+      <th class = tag> 태그 </th>
+    </tr>
+  </thead>
+  <tbody>
+    <% for (var i=0; i < array.length; i++) { %>
+    <tr>
+      <td><%=array[i].artist %></td>
+      <td><%=array[i].title %></td>
+      <td class = tag><%=array[i].tag %></td>
+    </tr>
+    <% } %>
+  </tbody>
+</table>

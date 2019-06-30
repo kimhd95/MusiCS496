@@ -1,0 +1,671 @@
+<!DOCTYPE HTML>
+<!--
+	Phantom by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+
+<style>
+  #container {
+    display: flex;
+  }
+
+  #box-left {
+    flex: 1;
+    margin-left:100px;
+    text-aligh: left;
+  }
+
+  #box-center {
+    margin-right:250px;
+    margin-left:250px;
+    flex: 1;
+    text-align: center;
+  }
+
+  #box-right {
+    flex: 1;
+    margin-right:100px;
+    text-align: left;
+  }
+
+  #myProgress {
+    position: absolute;
+    top: 550px;
+    left: 0px;
+    width: 500px;
+    height: 5px;
+    background-color: #ddd;
+  }
+
+  #myBar {
+    position: relative;
+    left: 0px;
+    width: 0%;
+    height: 100%;
+    background-color: #848484;
+  }
+
+  #totalBar {
+    position: relative;
+    left: 0px;
+    top: -5px;
+    width: 100%;
+    height: 100%;
+    background-color: #848484;
+    opacity: 0;
+    cursor: pointer;
+    z-index=100;
+  }
+
+  #myCircle {
+    position: relative;
+    left: -1px;
+    top: -15px;
+    border-radius: 100%;
+    width: 15px;
+    height: 15px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    background-color: #848484;
+  }
+
+  #myVolume {
+    position: absolute;
+    top: 550px;
+    left: 100px;
+    width: 300px;
+    height: 5px;
+    background-color: #ddd;
+  }
+
+  #volImage {
+    position: relative;
+    top: 580px;
+    left: -180px;
+  }
+
+  #volBar {
+    position: relative;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: #848484;
+  }
+
+  #totalVolBar {
+    position: relative;
+    left: 0px;
+    top: -5px;
+    width: 100%;
+    height: 100%;
+    background-color: #848484;
+    opacity: 0;
+    cursor: pointer;
+    z-index=100;
+  }
+
+  #volCircle {
+    position: relative;
+    left: 300px;
+    top: -15px;
+    border-radius: 100%;
+    width: 15px;
+    height: 15px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    background-color: #848484;
+  }
+
+  #wrapper {
+    width: 500px;
+    margin: 0 auto;
+  }
+
+  #play_btn {
+    position: absolute;
+    top: 500px;
+    left: 170px;
+    width: 80px;
+    height: 40px;
+    background-color: Transparent;
+    background-repeat: no-repeat;
+    border: none;
+    cursor: pointer;
+    outline: none;
+  }
+
+  #stop_btn {
+    position: absolute;
+    top: 500px;
+    left: 250px;
+    width: 80px;
+    height: 40px;
+    background-color: Transparent;
+    background-repeat: no-repeat;
+    border: none;
+    cursor: pointer;
+    outline: none;
+  }
+
+  #pre_btn {
+    position: absolute;
+    top: 510px;
+    left: 70px;
+    width: 80px;
+    height: 40px;
+    background-color: Transparent;
+    background-repeat: no-repeat;
+    border: none;
+    cursor: pointer;
+    outline: none;
+  }
+
+  #next_btn {
+    position: absolute;
+    top: 510px;
+    left: 350px;
+    width: 80px;
+    height: 40px;
+    background-color: Transparent;
+    background-repeat: no-repeat;
+    border: none;
+    cursor: pointer;
+    outline: none;
+  }
+</style>
+
+
+<head>
+  <title>musiCS496 - Player</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  <link rel="stylesheet" href="assets/css/main.css" />
+  <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+</head>
+
+<body class="is-preload">
+  <!-- Wrapper -->
+  <!--<div id="wrapper"> -->
+
+    <!-- Header -->
+    <header id="header">
+      <div class="inner">
+
+        <!-- Logo -->
+        <div style="position: relative; left:280px">
+          <a href="index.html" class="logo">
+					   <span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">musics496</span>
+				  </a>
+        </div>
+
+        <!-- Nav -->
+        <nav>
+          <ul>
+            <li><a href="#menu">Menu</a></li>
+          </ul>
+        </nav>
+
+      </div>
+    </header>
+
+    <!-- Menu -->
+    <nav id="menu">
+      <h2>Menu</h2>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="musicplayer.html">Music Player</a></li>
+        <li><a href="searchtag.html">Custom Setlist</a></li>
+        <li><a href="generic.html">Music Library</a></li>
+        <li><a href="elements.html">Elements</a></li>
+      </ul>
+    </nav>
+
+    <!-- Main -->
+    <div id="main">
+      <div class="inner">
+        <div style="position: relative; left:280px">
+          <h1 style="color:#dc7e90">M U S I C &nbsp; P L A Y E R</h1>
+        </div>
+
+        <div id='container'>
+          <div id='box-left'>
+            <div id="wrapper" style="position: absolute;">
+              <div id='lyrics' style="text-align:center; font-size: 18px; overflow:auto; top:50px; left:-50px; width:400px; height:600px; padding:10px; background-color:white; position: absolute;">
+              </div>
+            </div>
+          </div>
+          <div id='box-center'>
+        <div id="wrapper">
+          <div>
+            <div id="wrapper" style="position: absolute; text-align: center;">
+              <div style="position: relative;">
+                <canvas id='spec_view' width="300" height="300">
+        </canvas>
+              </div>
+            </div>
+
+            <div id="wrapper" style="position: absolute; text-align: center;">
+              <div style="position: relative; top:80px;">
+                <img style="border: 3px solid black; border-radius: 130px; -moz-border-radius: 130px; -khtml-border-radius: 130px; -webkit-border-radius: 130px;" id='picture' width='130' height='130' />
+              </div>
+            </div>
+
+            <div id="wrapper" style="position: absolute; text-align: center;">
+              <div style="position: relative;">
+                <img id='drop' width='300' height='300' src='drop.png' />
+              </div>
+            </div>
+
+            <div style="position: absolute;">
+              <div style="position: relative;" id='myProgress'>
+                <div id='myBar'></div>
+                <div id='totalBar'> </div>
+                <div id='myCircle'></div>
+              </div>
+            </div>
+
+            <div id="wrapper" style="position: relative; top: 350px; text-align: center;">
+              <strong id='title_text' style="font-size: 20px">Title</strong>
+            </div>
+
+            <div id="wrapper" style="position: relative; top: 375px; text-align: center;">
+              <strong id='artist_text' style="font-size: 18px">Artist</strong>
+            </div>
+
+            <div id="wrapper" style="position: relative; top: 380px; text-align: center;">
+              <strong id='album_text' style="font-size: 18px">Album</strong>
+            </div>
+
+            <div id="wrapper" style="position: relative; top: 400px; text-align: center;">
+              <strong id='time_text' style="font-size: 18px">Time</strong>
+            </div>
+          </div>
+
+          <div id="wrapper" style="position: absolute;">
+            <div id="wrapper">
+            <p id="play_btn" onclick="playSound(myAudioBuffer)">
+              <img id="play_img" src="play.png" style="max-width: 40px; max-height: 40px;">
+            </p>
+          </div>
+            <p id="stop_btn" onclick="stopSound()">
+              <img src="stop2.png" style="max-width: 40px; max-height: 40px;">
+            </p>
+            <p id="pre_btn">
+              <img src="previous.png" style="max-width: 40px; max-height: 40px;">
+            </p>
+            <p id="next_btn">
+              <img src="next.png" style="max-width: 40px; max-height: 40px;">
+            </p>
+          </div>
+
+          <div id='wrapper' style="position: absolute;" style="text-align: center";>
+            <div id=volImage style="position: relative;">
+              <img src="volume.png" style="max-width: 30px; max-height: 30px;" />
+            </div>
+
+            <div style="position: relative;" id='myVolume'>
+              <div id='volBar' style="text-align: center;"></div>
+              <div id='totalVolBar' style="text-align: center;"> </div>
+              <div id='volCircle' style="text-align: center;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id='box-right'>
+    </div>
+  </div>
+
+
+        <script src="getLyrics.js"></script>
+        <script src="jsmediatags.js"></script>
+        <script>
+          // Simple API - will fetch all tags
+          var jsmediatags = window.jsmediatags;
+
+          var context;
+          var myAudioBuffer = null;
+          var analyser;
+
+          var spec_view;
+          var WIDTH = 300;
+          var HEIGHT = 300;
+          var freeze_status = false;
+          var is_play = false;
+          var totalTime = 0;
+          var parseTotal = "00:00";
+          var remainTime = 0;
+          var startTime = 0;
+          //var pauseTime = 0;
+          var offset = 0;
+          var pro_width = 0;
+          var volume = 100;
+
+          var repeat2;
+
+          function startInterval() {
+            console.log("started");
+            repeat = setInterval(function() {
+              if (is_play && source && (offset < totalTime)) {
+                //console.log(offset);
+                offset += 0.01;
+                pro_width += 1 / totalTime;
+                remainTime = totalTime - offset;
+              }
+              if (remainTime <= 0) {
+                stopSound();
+              }
+              times = parseInt(offset);
+              parseTime = (parseInt(times / 60) < 10 ? "0" + parseInt(times / 60) : parseInt(times / 60)) + ":" + (times % 60 < 10 ? "0" + times % 60 : times % 60);
+              document.getElementById("myBar").style.width = pro_width + '%';
+              //console.log(document.getElementById("myBar").style.width);
+              document.getElementById("myCircle").style.left = document.getElementById("myBar").style.width;
+              time_text.innerHTML = (parseInt(times / 60) < 10 ? "0" + parseInt(times / 60) : parseInt(times / 60)) + ":" + (times % 60 < 10 ? "0" + times % 60 : times % 60) + "/" + parseTotal; // + "//" + remainTime;
+            }, 10);
+            console.log(repeat2);
+          }
+
+          function endInterval() {
+            console.log("stopped");
+            clearInterval(repeat2);
+          }
+
+          startInterval();
+
+          window.requestAnimationFrame(draw_spec);
+          //
+          window.onload = function() {
+            // file open button
+            var drop = document.getElementById('drop');
+            drop.ondragover = function(e) {
+              e.preventDefault();
+            };
+            drop.ondrop = fileChanged;
+
+            // canvas
+            spec_view = document.getElementById("spec_view");
+            spec_view.width = WIDTH;
+            spec_view.height = HEIGHT;
+
+            // create audio context
+            window.AudioContext = window.AudioContext || window.webkitAudioContext;
+            context = new AudioContext();
+
+            // analyzer
+            analyser = context.createAnalyser();
+            analyser.fftSize = 2048;
+            analyser.smoothingTimeConstant = 0;
+            //startInterval();
+
+            document.getElementById("totalBar").addEventListener("click", changeOffset, false);
+            document.getElementById("totalVolBar").addEventListener("click", changeVolume, false);
+          }
+
+          function draw_spec() {
+            // 2d canvas context
+            var drawContext = spec_view.getContext('2d');
+            //drawContext.globalAlpha = 0.5;
+            // fill rectangular
+            drawContext.fillStyle = 'rgb(0, 0, 0, 1)';
+            drawContext.fillRect(0, 0, WIDTH, HEIGHT, 50);
+            // drawing line setting
+            drawContext.lineWidth = 2;
+            drawContext.strokeStyle = 'rgb(0, 128, 255, 1)';
+            drawContext.beginPath();
+            // get samples
+            var dataArray = new Uint8Array(analyser.frequencyBinCount);
+            analyser.getByteFrequencyData(dataArray);
+
+            var sliceAngle = (Math.PI * 2.0) / ((dataArray.length - 160) * 2);
+            //length=1024
+            var theta = 0;
+            for (var i = 0; i < dataArray.length - 160; i++) {
+              var v = dataArray[i] / 512.0;
+              var r = 75;
+              var alpha = v * r;
+              var amplitude = alpha + r;
+              var x = WIDTH / 2.0 + amplitude * Math.sin(theta);
+              var y = HEIGHT / 2.0 - amplitude * Math.cos(theta);
+
+              if (i === 0) {
+                drawContext.moveTo(x, y);
+              } else {
+                drawContext.rect(x, y, sliceAngle, v);
+              }
+              theta += sliceAngle;
+            }
+
+            for (var i = dataArray.length - 161; i >= 0; i--) {
+              var v = dataArray[i] / 512.0;
+              var r = 75;
+              var alpha = v * r;
+              var amplitude = alpha + r;
+              var x = WIDTH / 2.0 + amplitude * Math.sin(theta);
+              var y = HEIGHT / 2.0 - amplitude * Math.cos(theta);
+
+              if (i === 0) {
+                drawContext.moveTo(x, y);
+              } else {
+                drawContext.rect(x, y, sliceAngle, v);
+                //drawContext.lineTo(x, y);
+              }
+              theta += sliceAngle;
+            }
+
+            // last touch
+            //drawContext.lineTo(draw_spec.width, draw_spec.height/2);
+
+            //drawContext.arc(WIDTH/2, HEIGHT/2, 75, 0, Math.PI * 2, true);
+            drawContext.stroke();
+
+            // queue for next callback
+            if (freeze_status == false) {
+              window.requestAnimationFrame(draw_spec);
+            }
+
+            //drawContext.clearRect(0, 0, WIDTH, HEIGHT);
+          }
+
+
+          function fileChanged(e) {
+            //var file = e.target.files[0];
+            e.preventDefault();
+            var data = e.dataTransfer;
+            var file;
+            if (data.items) { // DataTransferItemList 객체 사용
+              for (var i = 0; i < data.items.length; i++) { // DataTransferItem 객체 사용
+                if (data.items[i].kind == "file") { // 아이템 종류가 파일이면
+                  file = data.items[i].getAsFile(); // File API 사용
+                }
+              }
+            }
+
+            var name = file.name; // get file name
+            jsmediatags.read(file, {
+              onSuccess: function(tag) {
+                var tags = tag.tags;
+                var artist;
+                var title;
+                var album;
+                //alert(tags.artist);
+                //alert(tags.title);
+                //alert(tags.album);
+                //alert(tags.year);
+                //alert(tags.track);
+
+                var image = tags.picture;
+                var base64String = "";
+
+                document.getElementById('drop').style.opacity = 0;
+
+                if (image) {
+                  for (var i = 0; i < image.data.length; i++) {
+                    base64String += String.fromCharCode(image.data[i]);
+                  }
+                  var base64 = "data:image/jpeg;base64," +
+                    window.btoa(base64String);
+                  document.getElementById('picture').style.display = "inline"
+                  document.getElementById('picture').setAttribute('src', base64);
+                } else {
+                  document.getElementById('picture').style.display = none;
+                }
+                if (tags.artist) {
+                  artist = tags.artist;
+                } else if (name.includes("-")) {
+                  artist = name.split("-")[0].replace(/_/gi, " ");
+                } else {
+                  artist = "Various Artist";
+                }
+
+                if (tags.title) {
+                  title = tags.title;
+                  if (title.includes("-")) {
+                    artist = title.split("-")[0];
+                    title = title.split("-")[1];
+                  }
+                } else if (name.includes("-")) {
+                  title = name.split("-")[1].replace(/(^\s*)|(\s*$)/g, "").replace(/_/gi, " ");
+                } else {
+                  title = name;
+                }
+
+                if (tags.album) {
+                  album = tags.album;
+                } else {
+                  album = "Various Album";
+                }
+
+                document.getElementById('title_text').innerHTML = title;
+                document.getElementById('artist_text').innerHTML = artist;
+                document.getElementById('album_text').innerHTML = album;
+
+                //post artist name and title
+                var lyricTime = new Array();
+                postInfo(artist, title, document.getElementById("lyrics"), lyricTime);
+                postJSON(title, artist);
+                console.log(lyricTime);
+              },
+              onError: function(error) {
+                console.log(error);
+              }
+            });
+
+            var offset = 0;
+            stopSound();
+            //alert(path);
+            var fileReader = new FileReader();
+            fileReader.onload = fileLoaded;
+            fileReader.readAsArrayBuffer(file);
+          }
+
+          function fileLoaded(e) {
+            context.decodeAudioData(e.target.result, function(buffer) {
+              myAudioBuffer = buffer;
+            });
+          }
+          var source = null;
+
+          function playSound(anybuffer) {
+            var time_text = document.getElementById("time_text");
+            //offset = pauseTime;
+            if (!is_play) {
+              is_play = true;
+              totalTime = anybuffer.duration;
+              parseTotal = (parseInt(totalTime / 60) < 10 ? "0" + parseInt(totalTime / 60) : parseInt(totalTime / 60)) + ":" + (parseInt(totalTime % 60) < 10 ? "0" + parseInt(totalTime % 60) : parseInt(totalTime % 60));
+              source = context.createBufferSource();
+
+              source.buffer = anybuffer;
+              source.connect(context.destination);
+
+              var gainNode = context.createGain();
+              gainNode.gain.value = 0.1;
+              gainNode.connect(gainNode);
+
+              // connect source to analyser
+              source.connect(analyser);
+              source.start(0, offset);
+
+
+
+              startTime = context.currentTime - offset;
+              //pauseTime = 0;
+
+              // visualize audio
+              draw_spec();
+              document.getElementById("play_img").src = "pause.png";
+            } else {
+              is_play = false;
+              //var elapsed = context.currentTime - startTime;
+              window.requestAnimationFrame(draw_spec);
+
+              //toggleFreezeAnimation();
+              source.stop();
+              //pauseTime = elapsed;
+              document.getElementById("play_img").src = "play.png";
+            }
+          }
+
+          function stopSound() {
+            if (source) {
+              var play_button = document.getElementById("play_img");
+              play_button.src = 'play.png';
+              source.stop();
+              is_play = false;
+              offset = 0;
+              pro_width = 0;
+              //pauseTime = 0;
+              playTime = 0;
+              remainTime = totalTime;
+              //alert(context.currentTime);
+            }
+          }
+
+          function toggleFreezeAnimation() {
+            window.requestAnimationFrame(draw_spec);
+            var freeze_button = document.getElementById("freeze_button");
+            freeze_button.innerHTML = 'pause';
+          }
+
+          function changeOffset(e) {
+            var start_pos = Math.floor(getOffset(document.getElementById('totalBar')).left);
+            var click_pos = (window.Event) ? e.pageX : event.clientX + (document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft);
+            var percent = (click_pos - start_pos) / 500;
+            offset = percent * totalTime;
+            pro_width = percent * 100;
+            playSound(myAudioBuffer);
+            playSound(myAudioBuffer);
+          }
+
+          function changeVolume(e) {
+            var start_pos = Math.floor(getOffset(document.getElementById('totalVolBar')).left);
+            var click_pos = (window.Event) ? e.pageX : event.clientX + (document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft);
+            var percent = (click_pos - start_pos) / 3;
+            vol = percent;
+            document.getElementById("volBar").style.width = percent + '%';
+            document.getElementById("volCircle").style.left = document.getElementById("volBar").style.width;
+          }
+
+          function getOffset(el) {
+            el = el.getBoundingClientRect();
+            return {
+              left: el.left + window.scrollX,
+              top: el.top + window.scrollY
+            }
+          }
+
+          console.log(Math.floor(getOffset(document.getElementById('totalBar')).left));
+        </script>
+      </div>
+    </div>
+
+  <!-- Scripts -->
+  <script src="assets/js/jquery.min.js"></script>
+  <script src="assets/js/browser.min.js"></script>
+  <script src="assets/js/breakpoints.min.js"></script>
+  <script src="assets/js/util.js"></script>
+  <script src="assets/js/main.js"></script>
+
+</body>
+
+</html>
